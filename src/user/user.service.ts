@@ -9,13 +9,21 @@ import { UserRepository } from './user.repository';
 
 @Injectable()
 export class UserService {
+  private saltRounds = 10;
+
   constructor(
     private jwtService: JwtService,
     private userRepository: UserRepository,
   ) {}
 
   async signup(data: CreateUserDto): Promise<User> {
-    return this.userRepository.createUser(data);
+    const hashedPassword = await bcrypt.hash(data.password, this.saltRounds);
+    const user = await this.userRepository.create(
+      { ...data, password: hashedPassword },
+      'mobile',
+    );
+    delete user.password;
+    return user;
   }
 
   async signin(
