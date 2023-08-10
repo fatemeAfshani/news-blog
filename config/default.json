@@ -1,0 +1,7 @@
+{
+  "port": 3001,
+  "jwt": {
+    "secret": "sjfoie3453ol5jhrtosjifo3435@#$@#%sr4r543",
+    "expire": 3600
+  }
+}
