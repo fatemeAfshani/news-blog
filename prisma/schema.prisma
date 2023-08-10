@@ -1,0 +1,65 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model User {
+  id        Int     @default(autoincrement()) @id
+  firstName String  
+  lastName  String
+  mobile    String @unique
+  password  String 
+  news News[]
+}
+
+model News {
+  id        Int      @default(autoincrement()) @id
+  title     String
+  content   String
+  author    User   @relation(fields: [authorId], references: [id])
+  authorId  Int
+  views     Int?     @default(0)     
+  likes     Int?     @default(0)     
+  createdAt DateTime 
+  isDeleted Boolean? @default(false)
+  categories CategoriesOnNews[]
+  tags TagsOnNews[]
+
+}
+
+model Category {
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime 
+  news CategoriesOnNews[]
+}
+
+model CategoriesOnNews {
+  news       News     @relation(fields: [newsId], references: [id])
+  newsId     Int 
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId Int
+  @@id([newsId, categoryId])
+}
+
+
+model Tag {
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime 
+  news TagsOnNews[]
+}
+
+model TagsOnNews {
+  news       News     @relation(fields: [newsId], references: [id])
+  newsId     Int 
+  tag        Tag @relation(fields: [tagId], references: [id])
+  tagId      Int
+  @@id([newsId, tagId])
+}
