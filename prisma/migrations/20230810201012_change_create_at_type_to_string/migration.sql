@@ -1,0 +1,8 @@
+-- AlterTable
+ALTER TABLE "Category" ALTER COLUMN "createdAt" SET DATA TYPE TEXT;
+
+-- AlterTable
+ALTER TABLE "News" ALTER COLUMN "createdAt" SET DATA TYPE TEXT;
+
+-- AlterTable
+ALTER TABLE "Tag" ALTER COLUMN "createdAt" SET DATA TYPE TEXT;

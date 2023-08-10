@@ -20,13 +20,13 @@ model User {
 
 model News {
   id        Int      @default(autoincrement()) @id
-  title     String
+  title     String @unique
   content   String
   author    User   @relation(fields: [authorId], references: [id])
   authorId  Int
   views     Int?     @default(0)     
   likes     Int?     @default(0)     
-  createdAt DateTime 
+  createdAt String 
   isDeleted Boolean? @default(false)
   categories CategoriesOnNews[]
   tags TagsOnNews[]
@@ -35,8 +35,8 @@ model News {
 
 model Category {
   id        Int      @id @default(autoincrement())
-  name      String
-  createdAt DateTime 
+  name      String @unique
+  createdAt String 
   news CategoriesOnNews[]
 }
 
@@ -51,8 +51,8 @@ model CategoriesOnNews {
 
 model Tag {
   id        Int      @id @default(autoincrement())
-  name      String
-  createdAt DateTime 
+  name      String @unique
+  createdAt String 
   news TagsOnNews[]
 }
 
