@@ -1,9 +1,11 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   Query,
   UseGuards,
@@ -14,6 +16,7 @@ import { News, User } from '@prisma/client';
 import { GetUser } from 'src/user/user.decorator';
 import { CreateNewsDto } from './dto/createNews.dto';
 import { NewsFilterDto } from './dto/newsFilter.dto';
+import { UpdateNewsDto } from './dto/updateNews.dto';
 import { NewsService } from './news.service';
 
 @ApiTags('News')
@@ -81,4 +84,41 @@ export class NewsController {
   async getOne(@Param('id', ParseIntPipe) id: number): Promise<News> {
     return this.newsService.getOne(id);
   }
+
+  @Patch(':id')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard())
+  @ApiResponse({
+    status: 200,
+    description: 'successful',
+  })
+  @ApiResponse({ status: 400, description: 'unable to update with this data' })
+  @ApiResponse({
+    status: 401,
+    description: 'UnAuthorized',
+  })
+  @ApiResponse({ status: 500, description: 'Internal Server Error' })
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() data: UpdateNewsDto,
+  ): Promise<News> {
+    return this.newsService.update(id, data);
+  }
+
+  // @Delete(':id')
+  // @ApiBearerAuth()
+  // @UseGuards(AuthGuard())
+  // @ApiResponse({
+  //   status: 200,
+  //   description: 'successful',
+  // })
+  // @ApiResponse({
+  //   status: 401,
+  //   description: 'UnAuthorized',
+  // })
+  // @ApiResponse({ status: 404, description: 'already deleted' })
+  // @ApiResponse({ status: 500, description: 'Internal Server Error' })
+  // deleteATask(@Param('id', ParseIntPipe) id: number): Promise<Tag> {
+  //   return this.newsService.delete(id);
+  // }
 }

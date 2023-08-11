@@ -2,12 +2,14 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
 
 @Injectable()
 export abstract class BaseRepository<T> {
+  private logger = new Logger('baseRepository');
   constructor(
     protected readonly prisma: PrismaService,
     private readonly modelName: string,
@@ -81,9 +83,11 @@ export abstract class BaseRepository<T> {
       const deleted = await this.prisma[this.modelName].delete({
         where: { id },
       });
+
       return deleted;
     } catch (error) {
-      throw new NotFoundException('already deleted');
+      this.logger.error('#### error in deleting ', error);
+      throw new NotFoundException('unable to delete this data');
     }
   }
 
