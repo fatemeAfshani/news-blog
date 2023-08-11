@@ -5,13 +5,15 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { News, User } from '@prisma/client';
 import { GetUser } from 'src/user/user.decorator';
 import { CreateNewsDto } from './dto/createNews.dto';
+import { NewsFilterDto } from './dto/newsFilter.dto';
 import { NewsService } from './news.service';
 
 @ApiTags('News')
@@ -39,7 +41,32 @@ export class NewsController {
     return this.newsService.create(data, user);
   }
 
-  //get all
+  @Get('')
+  @ApiResponse({
+    status: 200,
+    description: 'successful',
+  })
+  @ApiResponse({ status: 500, description: 'Internal Server Error' })
+  @ApiResponse({
+    status: 400,
+    description: 'date format is invalid, example: 1402/05/20',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+  })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+  })
+  async getAll(
+    @Query('limit') limit?: number,
+    @Query('page') page?: number,
+    @Query()
+    newsFilterDto?: NewsFilterDto,
+  ): Promise<{ news: News[]; totalCount: number }> {
+    return this.newsService.getAll({ limit, page, newsFilterDto });
+  }
 
   @Get(':id')
   @ApiResponse({

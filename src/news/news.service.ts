@@ -44,4 +44,26 @@ export class NewsService {
   getOne(id: number): Promise<News> {
     return this.newsRepository.getOneNews(id);
   }
+
+  async getAll({
+    limit = 10,
+    page = 0,
+    newsFilterDto,
+  }): Promise<{ news: News[]; totalCount: number }> {
+    const relations = {
+      tags: { include: { tag: true } },
+      categories: { include: { category: true } },
+      author: {},
+    };
+    const { instances, count } = await this.newsRepository.getAll(
+      +limit,
+      limit * page,
+      newsFilterDto,
+      relations,
+    );
+    return {
+      news: instances,
+      totalCount: count,
+    };
+  }
 }

@@ -41,7 +41,8 @@ export abstract class BaseRepository<T> {
   async getAll(
     limit = 10,
     offset = 0,
-    searchFilter: object,
+    searchFilter: object = {},
+    include: object = {},
   ): Promise<{ instances: T[]; count: number }> {
     const whereCondition = this.createWhereCondition(searchFilter);
 
@@ -53,6 +54,7 @@ export abstract class BaseRepository<T> {
           id: 'desc',
         },
         where: whereCondition,
+        include,
       }),
       this.prisma[this.modelName].count({ where: whereCondition }),
     ]);
@@ -88,16 +90,42 @@ export abstract class BaseRepository<T> {
   private createWhereCondition(searchFilter: object) {
     const whereCondition = {};
     for (const filter in searchFilter) {
-      if (filter === 'id') {
-        whereCondition[filter] = {
-          equals: +searchFilter[filter],
-        };
-      } else {
-        whereCondition[filter] = {
-          contains: searchFilter[filter],
-        };
+      switch (filter) {
+        case 'id':
+          whereCondition[filter] = {
+            equals: +searchFilter[filter],
+          };
+          break;
+        case 'category':
+          whereCondition['categories'] = {
+            some: {
+              category: {
+                name: {
+                  contains: searchFilter[filter],
+                },
+              },
+            },
+          };
+          break;
+        case 'tag':
+          whereCondition['tags'] = {
+            some: {
+              tag: {
+                name: {
+                  contains: searchFilter[filter],
+                },
+              },
+            },
+          };
+          break;
+        default:
+          whereCondition[filter] = {
+            contains: searchFilter[filter],
+          };
+          break;
       }
     }
+
     return whereCondition;
   }
 }
