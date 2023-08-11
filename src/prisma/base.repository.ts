@@ -1,4 +1,8 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from './prisma.service';
 
 @Injectable()
@@ -24,7 +28,13 @@ export abstract class BaseRepository<T> {
   }
 
   async findById(id: number): Promise<T | null> {
-    return this.prisma[this.modelName].findUnique({ where: { id } });
+    const instance = await this.prisma[this.modelName].findUnique({
+      where: { id },
+    });
+    if (!instance) {
+      throw new NotFoundException('data not found');
+    }
+    return instance;
   }
 
   async update(id: number, data: any): Promise<T | null> {

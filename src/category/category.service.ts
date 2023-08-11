@@ -18,4 +18,8 @@ export class CategoryService {
       'name',
     );
   }
+
+  getOne(id: number): Promise<Category> {
+    return this.categoryRepository.findById(id);
+  }
 }
