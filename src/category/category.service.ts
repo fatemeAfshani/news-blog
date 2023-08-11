@@ -42,4 +42,8 @@ export class CategoryService {
   update(id: number, name: string): Promise<Category> {
     return this.categoryRepository.updateUniqueFields(id, { name });
   }
+
+  delete(id: number): Promise<Category> {
+    return this.categoryRepository.delete(id);
+  }
 }

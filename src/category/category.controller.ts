@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -79,20 +80,6 @@ export class CategoryController {
     return this.categoryService.getOne(id);
   }
 
-  // @Delete(':id')
-  // @ApiResponse({
-  //   status: 200,
-  //   description: 'successful',
-  // })
-  // @ApiResponse({ status: 404, description: 'task with id 1 not found' })
-  // @ApiResponse({ status: 500, description: 'Internal Server Error' })
-  // deleteATask(
-  //   @Param('id', ParseIntPipe) id: number,
-  //   @GetUser() user: User,
-  // ): Promise<void> {
-  //   return this.taskService.deleteATask(id, user);
-  // }
-
   @Patch(':id')
   @ApiBearerAuth()
   @UseGuards(AuthGuard())
@@ -111,5 +98,22 @@ export class CategoryController {
     @Body() { name }: UpdateCategoryDto,
   ): Promise<Category> {
     return this.categoryService.update(id, name);
+  }
+
+  @Delete(':id')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard())
+  @ApiResponse({
+    status: 200,
+    description: 'successful',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'UnAuthorized',
+  })
+  @ApiResponse({ status: 404, description: 'already deleted' })
+  @ApiResponse({ status: 500, description: 'Internal Server Error' })
+  deleteATask(@Param('id', ParseIntPipe) id: number): Promise<Category> {
+    return this.categoryService.delete(id);
   }
 }

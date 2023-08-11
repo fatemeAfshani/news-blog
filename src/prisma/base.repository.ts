@@ -75,7 +75,14 @@ export abstract class BaseRepository<T> {
   }
 
   async delete(id: number): Promise<T | null> {
-    return this.prisma[this.modelName].delete({ where: { id } });
+    try {
+      const deleted = await this.prisma[this.modelName].delete({
+        where: { id },
+      });
+      return deleted;
+    } catch (error) {
+      throw new NotFoundException('already deleted');
+    }
   }
 
   private createWhereCondition(searchFilter: object) {
