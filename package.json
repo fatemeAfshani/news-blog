@@ -6,6 +6,9 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+    "dev:db:rm": "docker-compose rm  -s -f -v postgres",
+    "dev:db:up": "docker-compose  --env-file ./.env up -d postgres",
+    "dev:db": "yarn dev:db:rm && yarn dev:db:up",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
