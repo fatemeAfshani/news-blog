@@ -25,12 +25,12 @@ export class CategoryService {
 
   async getAll({
     limit = 10,
-    page = 0,
+    page = 1,
     categoryFilterDto,
   }): Promise<{ categories: Category[]; totalCount: number }> {
     const { instances, count } = await this.categoryRepository.getAll(
       +limit,
-      limit * page,
+      limit * (page - 1),
       categoryFilterDto,
     );
     return {

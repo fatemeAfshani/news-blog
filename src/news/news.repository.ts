@@ -122,4 +122,23 @@ export class NewsRepository extends BaseRepository<News> {
       throw new BadRequestException('unable to update news this data');
     }
   }
+
+  async hotestNews(): Promise<{ news: News[] }> {
+    const hotNewsCount = 10;
+    const newsCount = await this.prisma.news.count();
+    const uniqueNumbers = new Set<number>();
+
+    while (uniqueNumbers.size < hotNewsCount) {
+      const randomNumber = Math.floor(Math.random() * newsCount) + 1;
+      uniqueNumbers.add(randomNumber);
+    }
+    const news = await this.prisma.news.findMany({
+      where: {
+        id: {
+          in: Array.from(uniqueNumbers),
+        },
+      },
+    });
+    return { news };
+  }
 }

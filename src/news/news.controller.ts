@@ -22,6 +22,8 @@ import { NewsFilterDto } from './dto/newsFilter.dto';
 import { UpdateNewsDto } from './dto/updateNews.dto';
 import { NewsService } from './news.service';
 import { Request } from 'express';
+import { NewsOrder } from './newsStatus.enum';
+import { NewsOrderValidationPipe } from './pipes/task-status-validation.pipe';
 
 @ApiTags('News')
 @Controller('news')
@@ -73,6 +75,29 @@ export class NewsController {
     newsFilterDto?: NewsFilterDto,
   ): Promise<{ news: News[]; totalCount: number }> {
     return this.newsService.getAll({ limit, page, newsFilterDto });
+  }
+
+  @Get('/order/:order')
+  @ApiResponse({
+    status: 200,
+    description: 'successful',
+  })
+  @ApiResponse({ status: 500, description: 'Internal Server Error' })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+  })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+  })
+  async getAllWithOrder(
+    @Param('order', NewsOrderValidationPipe)
+    order: NewsOrder,
+    @Query('limit') limit?: number,
+    @Query('page') page?: number,
+  ): Promise<{ news: News[]; totalCount?: number }> {
+    return this.newsService.getAllWithOrder({ limit, page, order });
   }
 
   @Get(':id')

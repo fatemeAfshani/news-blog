@@ -45,6 +45,7 @@ export abstract class BaseRepository<T> {
     offset = 0,
     searchFilter: object = {},
     include: object = {},
+    orderBy: object = { id: 'desc' },
   ): Promise<{ instances: T[]; count: number }> {
     const whereCondition = this.createWhereCondition(searchFilter);
 
@@ -52,9 +53,7 @@ export abstract class BaseRepository<T> {
       this.prisma[this.modelName].findMany({
         take: limit,
         skip: offset,
-        orderBy: {
-          id: 'desc',
-        },
+        orderBy,
         where: whereCondition,
         include,
       }),

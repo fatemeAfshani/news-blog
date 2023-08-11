@@ -9,6 +9,7 @@ import { CreateNewsDto } from './dto/createNews.dto';
 
 import { NewsRepository } from './news.repository';
 import { UpdateNewsDto } from './dto/updateNews.dto';
+import { NewsOrder } from './newsStatus.enum';
 
 @Injectable()
 export class NewsService {
@@ -26,18 +27,58 @@ export class NewsService {
 
   async getAll({
     limit = 10,
-    page = 0,
+    page = 1,
     newsFilterDto,
   }): Promise<{ news: News[]; totalCount: number }> {
     const { instances, count } = await this.newsRepository.getAll(
       +limit,
-      limit * page,
+      limit * (page - 1),
       newsFilterDto,
       {
         tags: { include: { tag: true } },
         categories: { include: { category: true } },
         author: {},
       },
+    );
+    return {
+      news: instances,
+      totalCount: count,
+    };
+  }
+
+  async getAllWithOrder({
+    limit = 10,
+    page = 1,
+    order,
+  }): Promise<{ news: News[]; totalCount?: number }> {
+    if (order === NewsOrder.HOTESET) {
+      return this.newsRepository.hotestNews();
+    }
+    const orderBy = {};
+    switch (order) {
+      case NewsOrder.LATEST:
+        orderBy['createdAt'] = 'desc';
+        break;
+      case NewsOrder.MOST_LIKED:
+        orderBy['likes'] = 'desc';
+        break;
+      case NewsOrder.MOST_VIEWED:
+        orderBy['views'] = 'desc';
+        break;
+      default:
+        orderBy['id'] = 'desc';
+    }
+
+    const { instances, count } = await this.newsRepository.getAll(
+      +limit,
+      limit * (page - 1),
+      {},
+      {
+        tags: { include: { tag: true } },
+        categories: { include: { category: true } },
+        author: {},
+      },
+      orderBy,
     );
     return {
       news: instances,
