@@ -100,20 +100,20 @@ export class CategoryController {
     return this.categoryService.update(id, name);
   }
 
-  @Delete(':id')
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard())
-  @ApiResponse({
-    status: 200,
-    description: 'successful',
-  })
-  @ApiResponse({
-    status: 401,
-    description: 'UnAuthorized',
-  })
-  @ApiResponse({ status: 404, description: 'already deleted' })
-  @ApiResponse({ status: 500, description: 'Internal Server Error' })
-  deleteATask(@Param('id', ParseIntPipe) id: number): Promise<Category> {
-    return this.categoryService.delete(id);
-  }
+  // @Delete(':id')
+  // @ApiBearerAuth()
+  // @UseGuards(AuthGuard())
+  // @ApiResponse({
+  //   status: 200,
+  //   description: 'successful',
+  // })
+  // @ApiResponse({
+  //   status: 401,
+  //   description: 'UnAuthorized',
+  // })
+  // @ApiResponse({ status: 404, description: 'unable to delete this data' })
+  // @ApiResponse({ status: 500, description: 'Internal Server Error' })
+  // deleteATask(@Param('id', ParseIntPipe) id: number): Promise<Category> {
+  //   return this.categoryService.delete(id);
+  // }
 }
