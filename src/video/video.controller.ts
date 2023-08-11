@@ -57,7 +57,6 @@ export class VideoController {
     }),
   )
   async addVideo(@UploadedFile() file: Express.Multer.File) {
-    console.log('#### file', file);
     return this.videoService.create({
       name: file.originalname,
       path: file.path,
