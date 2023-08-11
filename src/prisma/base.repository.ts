@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -60,6 +61,16 @@ export abstract class BaseRepository<T> {
   }
 
   async update(id: number, data: any): Promise<T | null> {
+    return this.prisma[this.modelName].update({ where: { id }, data });
+  }
+
+  async updateUniqueFields(id: number, data: any): Promise<T> {
+    const instance = await this.prisma[this.modelName].findUnique({
+      where: data,
+    });
+    if (instance) {
+      throw new BadRequestException('unable to update with this data');
+    }
     return this.prisma[this.modelName].update({ where: { id }, data });
   }
 

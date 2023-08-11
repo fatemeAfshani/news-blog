@@ -38,4 +38,8 @@ export class CategoryService {
       totalCount: count,
     };
   }
+
+  update(id: number, name: string): Promise<Category> {
+    return this.categoryRepository.updateUniqueFields(id, { name });
+  }
 }
