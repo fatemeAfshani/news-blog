@@ -39,6 +39,7 @@ model Category {
   name      String @unique
   createdAt String 
   news CategoriesOnNews[]
+  videos CategoriesOnVideos[]
 }
 
 model CategoriesOnNews {
@@ -63,4 +64,25 @@ model TagsOnNews {
   tag        Tag @relation(fields: [tagId], references: [id])
   tagId      Int
   @@id([newsId, tagId])
+}
+
+
+
+model Video {
+  id       Int    @id @default(autoincrement())
+  name String  @unique
+  path     String
+  mimetype String
+  createdAt String
+  isDeleted Boolean? @default(false)
+  categories CategoriesOnVideos[]
+
+}
+
+model CategoriesOnVideos {
+  video       Video     @relation(fields: [videoId], references: [id])
+  videoId     Int 
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId Int
+  @@id([videoId, categoryId])
 }
