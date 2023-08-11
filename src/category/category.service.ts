@@ -13,7 +13,7 @@ export class CategoryService {
     return this.categoryRepository.create(
       {
         name: data.name,
-        createdAt: moment().format('jYYYY/jM/jD HH:mm:ss'),
+        createdAt: moment().format('jYYYY/jMM/jDD HH:mm:ss'),
       },
       'name',
     );
@@ -21,5 +21,21 @@ export class CategoryService {
 
   getOne(id: number): Promise<Category> {
     return this.categoryRepository.findById(id);
+  }
+
+  async getAll({
+    limit = 10,
+    page = 0,
+    categoryFilterDto,
+  }): Promise<{ categories: Category[]; totalCount: number }> {
+    const { instances, count } = await this.categoryRepository.getAll(
+      +limit,
+      limit * page,
+      categoryFilterDto,
+    );
+    return {
+      categories: instances,
+      totalCount: count,
+    };
   }
 }

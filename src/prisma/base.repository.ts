@@ -37,11 +37,49 @@ export abstract class BaseRepository<T> {
     return instance;
   }
 
+  async getAll(
+    limit = 10,
+    offset = 0,
+    searchFilter: object,
+  ): Promise<{ instances: T[]; count: number }> {
+    const whereCondition = this.createWhereCondition(searchFilter);
+
+    const [instances, count] = await this.prisma.$transaction([
+      this.prisma[this.modelName].findMany({
+        take: limit,
+        skip: offset,
+        orderBy: {
+          id: 'desc',
+        },
+        where: whereCondition,
+      }),
+      this.prisma[this.modelName].count({ where: whereCondition }),
+    ]);
+
+    return { instances, count };
+  }
+
   async update(id: number, data: any): Promise<T | null> {
     return this.prisma[this.modelName].update({ where: { id }, data });
   }
 
   async delete(id: number): Promise<T | null> {
     return this.prisma[this.modelName].delete({ where: { id } });
+  }
+
+  private createWhereCondition(searchFilter: object) {
+    const whereCondition = {};
+    for (const filter in searchFilter) {
+      if (filter === 'id') {
+        whereCondition[filter] = {
+          equals: +searchFilter[filter],
+        };
+      } else {
+        whereCondition[filter] = {
+          contains: searchFilter[filter],
+        };
+      }
+    }
+    return whereCondition;
   }
 }
