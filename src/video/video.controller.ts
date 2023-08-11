@@ -12,12 +12,21 @@ import {
   Delete,
   Query,
   Patch,
+  Header,
+  Headers,
+  Res,
 } from '@nestjs/common';
-import { Express } from 'express';
+import { Express, Response } from 'express';
 import { VideoService } from './video.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { ApiBearerAuth, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiHeader,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { Video } from '@prisma/client';
 import { VideoFilterDto } from './dto/videoFilter.dto';
@@ -57,14 +66,36 @@ export class VideoController {
   }
 
   @Get('/stream/:id')
+  @Header('Accept-Ranges', 'bytes')
+  @Header('Content-Type', 'video/mp4')
   @ApiResponse({
     status: 200,
     description: 'successful',
   })
   @ApiResponse({ status: 404, description: 'data not found' })
   @ApiResponse({ status: 500, description: 'Internal Server Error' })
-  streamVideo(@Param('id', ParseIntPipe) id: number) {
-    return this.videoService.getVideoStreamById(id);
+  @ApiHeader({
+    name: 'range',
+    required: false,
+    description: 'example: bytes=200-1000',
+  })
+  async streamVideo(
+    @Param('id', ParseIntPipe) id: number,
+    @Headers('range') range: string,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    if (!range) {
+      return this.videoService.getVideoStreamById(id);
+    }
+    const { streamableFile, contentRange } =
+      await this.videoService.getPartialVideoStream(id, range);
+
+    response.set({
+      'Content-Range': contentRange,
+    });
+    response.status(206);
+
+    return streamableFile;
   }
 
   @Get('')
