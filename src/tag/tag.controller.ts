@@ -113,7 +113,7 @@ export class TagController {
   // })
   // @ApiResponse({ status: 404, description: 'unable to delete this data' })
   // @ApiResponse({ status: 500, description: 'Internal Server Error' })
-  // deleteATask(@Param('id', ParseIntPipe) id: number): Promise<Tag> {
+  // delete(@Param('id', ParseIntPipe) id: number): Promise<Tag> {
   //   return this.tagService.delete(id);
   // }
 }

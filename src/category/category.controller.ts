@@ -113,7 +113,7 @@ export class CategoryController {
   // })
   // @ApiResponse({ status: 404, description: 'unable to delete this data' })
   // @ApiResponse({ status: 500, description: 'Internal Server Error' })
-  // deleteATask(@Param('id', ParseIntPipe) id: number): Promise<Category> {
+  // delete(@Param('id', ParseIntPipe) id: number): Promise<Category> {
   //   return this.categoryService.delete(id);
   // }
 }

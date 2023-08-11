@@ -25,7 +25,8 @@ model News {
   author    User   @relation(fields: [authorId], references: [id])
   authorId  Int
   views     Int?     @default(0)     
-  likes     Int?     @default(0)     
+  likes     Int?     @default(0)    
+  likeIps   String[]  
   createdAt String 
   isDeleted Boolean? @default(false)
   categories CategoriesOnNews[]

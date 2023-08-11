@@ -1,3 +1,5 @@
+import * as requestIp from 'request-ip';
+
 import {
   Body,
   Controller,
@@ -8,6 +10,7 @@ import {
   Patch,
   Post,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
@@ -18,6 +21,7 @@ import { CreateNewsDto } from './dto/createNews.dto';
 import { NewsFilterDto } from './dto/newsFilter.dto';
 import { UpdateNewsDto } from './dto/updateNews.dto';
 import { NewsService } from './news.service';
+import { Request } from 'express';
 
 @ApiTags('News')
 @Controller('news')
@@ -118,7 +122,22 @@ export class NewsController {
   })
   @ApiResponse({ status: 404, description: 'unable to delete' })
   @ApiResponse({ status: 500, description: 'Internal Server Error' })
-  deleteATask(@Param('id', ParseIntPipe) id: number): Promise<News> {
+  delete(@Param('id', ParseIntPipe) id: number): Promise<News> {
     return this.newsService.delete(id);
+  }
+
+  @Post('/:id/like')
+  @ApiResponse({
+    status: 200,
+    description: 'successful',
+  })
+  @ApiResponse({ status: 400, description: 'already liked' })
+  @ApiResponse({ status: 500, description: 'Internal Server Error' })
+  likeANews(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() request: Request,
+  ): Promise<News> {
+    const clientIp = requestIp.getClientIp(request);
+    return this.newsService.likeANews(id, clientIp);
   }
 }

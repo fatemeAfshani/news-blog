@@ -1,4 +1,9 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { News, User } from '@prisma/client';
 import { CreateNewsDto } from './dto/createNews.dto';
 
@@ -52,5 +57,19 @@ export class NewsService {
       this.logger.error('#### error in deleting news', error);
       throw new NotFoundException('unable to delete');
     }
+  }
+
+  async likeANews(id: number, ip: string): Promise<News> {
+    const news = await this.newsRepository.findById(id);
+    if (news.likeIps.includes(ip)) {
+      throw new BadRequestException('already liked');
+    }
+    news.likeIps.push(ip);
+    return this.newsRepository.update(id, {
+      likes: {
+        increment: 1,
+      },
+      likeIps: news.likeIps,
+    });
   }
 }
