@@ -14,7 +14,13 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiParam,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { News, User } from '@prisma/client';
 import { GetUser } from 'src/user/user.decorator';
 import { CreateNewsDto } from './dto/createNews.dto';
@@ -90,6 +96,10 @@ export class NewsController {
   @ApiQuery({
     name: 'page',
     required: false,
+  })
+  @ApiParam({
+    enum: ['latest', 'hotest', 'most_viewed', 'most_liked'],
+    name: 'order',
   })
   async getAllWithOrder(
     @Param('order', NewsOrderValidationPipe)

@@ -25,12 +25,12 @@ export class TagService {
 
   async getAll({
     limit = 10,
-    page = 0,
+    page = 1,
     tagFilterDto,
   }): Promise<{ tags: Tag[]; totalCount: number }> {
     const { instances, count } = await this.tagRepository.getAll(
       +limit,
-      limit * page,
+      limit * (page - 1),
       tagFilterDto,
     );
     return {
