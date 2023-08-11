@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { News, User } from '@prisma/client';
 import { CreateNewsDto } from './dto/createNews.dto';
 
@@ -8,6 +8,8 @@ import { UpdateNewsDto } from './dto/updateNews.dto';
 @Injectable()
 export class NewsService {
   constructor(private readonly newsRepository: NewsRepository) {}
+
+  private logger = new Logger('newsService');
 
   create(data: CreateNewsDto, user: User): Promise<News> {
     return this.newsRepository.createNews(data, user);
@@ -40,5 +42,15 @@ export class NewsService {
 
   update(id: number, data: UpdateNewsDto): Promise<News> {
     return this.newsRepository.updateNews(id, data);
+  }
+
+  async delete(id: number): Promise<News> {
+    try {
+      const deleted = await this.newsRepository.update(id, { isDeleted: true });
+      return deleted;
+    } catch (error) {
+      this.logger.error('#### error in deleting news', error);
+      throw new NotFoundException('unable to delete');
+    }
   }
 }
